@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MuServerIc</string>
+    <string name="playnext">com.zoer.recivers.playNext</string>
+    <string name="playPrev">com.zoer.recivers.playPrev</string>
+    <string name="pause">com.zoer.recivers.pause</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="action_settings">Settings</string>
+</resources>
