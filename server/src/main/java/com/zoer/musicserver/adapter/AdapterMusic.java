@@ -112,10 +112,10 @@ public class AdapterMusic extends BaseAdapter {
         if (convertView == null) {
             mViewHolder = new ViewHolder();
             convertView = inflate.inflate(R.layout.inflate_allsongsitem, null);
-            mViewHolder.mediaArt = (ImageView) convertView.findViewById(R.id.img_mediaArt);
-            mViewHolder.playState = (ImageView) convertView.findViewById(R.id.img_playState);
-            mViewHolder.mediaTitle = (TextView) convertView.findViewById(R.id.text_mediaTitle);
-            mViewHolder.MediaDesc = (TextView) convertView.findViewById(R.id.text_mediaDesc);
+            mViewHolder.mediaArt = convertView.findViewById(R.id.img_mediaArt);
+            mViewHolder.playState = convertView.findViewById(R.id.img_playState);
+            mViewHolder.mediaTitle = convertView.findViewById(R.id.text_mediaTitle);
+            mViewHolder.MediaDesc = convertView.findViewById(R.id.text_mediaDesc);
             convertView.setTag(mViewHolder);
         } else {
             mViewHolder = (ViewHolder) convertView.getTag();
@@ -202,8 +202,8 @@ public class AdapterMusic extends BaseAdapter {
 
     private static void progressEvent(View v, boolean isShowing) {
         try {
-            RelativeLayout rl = (RelativeLayout) ((ImageView) v).getParent();
-            ProgressBar pg = (ProgressBar) rl.findViewById(R.id.pg);
+            RelativeLayout rl = (RelativeLayout) v.getParent();
+            ProgressBar pg = rl.findViewById(R.id.pg);
             pg.setVisibility(isShowing ? View.GONE : View.VISIBLE);
         } catch (Exception e) {
             e.printStackTrace();

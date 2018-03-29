@@ -1,0 +1,5 @@
+package com.zoer.musicserver.server
+
+var UDP_BroadCast_Thread_Flag=true
+var Socket_Server_Thread_Flag=true
+var Socket_Reply_Thread_Flag=true

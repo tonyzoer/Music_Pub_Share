@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.zoer.musicserver">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -7,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -16,8 +18,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activities.ServerActivity">
+        android:theme="@style/AppTheme"
+        tools:replace="android:theme">
+        <activity android:name="net.rdrei.android.dirchooser.DirectoryChooserActivity" />
+        <activity android:name="com.zoer.musicserver.activities.ServerActivity"
+            android:label="@string/server_settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,12 +30,17 @@
             </intent-filter>
         </activity>
 
+
+        <activity android:name="com.zoer.musicserver.activities.MusicActivity"
+            android:label="@string/music"/>
+        <activity
+            android:name="com.zoer.musicserver.activities.SettingsActivity"
+            android:label="@string/settings" />
+
         <service
-            android:name=".server.ServerSocket"
+            android:name=".server.StartServerSocket"
             android:enabled="true"
             android:exported="true" />
-
-        <activity android:name=".activities.MusicActivity" />
     </application>
 
 </manifest>

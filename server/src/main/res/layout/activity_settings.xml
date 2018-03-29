@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.zoer.musicserver.activities.SettingsActivity">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            app:title="@string/music"
+            app:title="@string/settings"
             app:titleTextColor="@color/md_black_1000_50"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_below="@+id/statusBar"
             android:background="?attr/colorPrimary"
-            android:translationZ="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -33,33 +31,33 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:background="@color/md_deep_purple_400"
-                    app:bmb_normalColor="@color/md_deep_purple_700"
                     app:bmb_backgroundEffect="false"
                     app:bmb_boomEnum="boomParabola_2"
                     app:bmb_buttonPlaceEnum="buttonPlace_ham_2"
                     app:bmb_hideDuration="200"
+                    app:bmb_normalColor="@color/md_deep_purple_700"
                     app:bmb_piecePlaceEnum="piecePlace_ham_2"
                     app:bmb_showDuration="900" />
+
 
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:orientation="vertical">
+    </android.support.design.widget.AppBarLayout>
 
-            <ListView
-                android:id="@+id/musicList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="?attr/actionBarSize"
-                android:fadingEdge="none"
-                android:scrollbarThumbVertical="@drawable/scrollbar" />
+    <include
+        android:id="@+id/settings_content"
+        layout="@layout/content_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-        </LinearLayout>
-    </LinearLayout>
+    <!--<ListView-->
+        <!--android:id="@+id/folder_pathes"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="162dp"-->
+        <!--app:layout_anchor="@+id/include"-->
+        <!--app:layout_anchorGravity="bottom"-->
+        <!--android:layout_marginTop="300px"-->
+        <!--tools:layout_editor_absoluteY="13dp" />-->
 
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

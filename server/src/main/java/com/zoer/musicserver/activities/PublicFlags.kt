@@ -1,0 +1,3 @@
+package com.zoer.musicserver.activities
+
+var serverActivityPreviuslyStarted=false

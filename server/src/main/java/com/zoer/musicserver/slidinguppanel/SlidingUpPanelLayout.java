@@ -229,7 +229,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 		 *            The new offset of this sliding pane within its range, from
 		 *            0-1
 		 */
-		public void onPanelSlide(View panel, float slideOffset);
+        void onPanelSlide(View panel, float slideOffset);
 
 		/**
 		 * Called when a sliding panel becomes slid completely collapsed.
@@ -237,7 +237,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 		 * @param panel
 		 *            The child view that was slid to an collapsed position
 		 */
-		public void onPanelCollapsed(View panel);
+        void onPanelCollapsed(View panel);
 
 		/**
 		 * Called when a sliding panel becomes slid completely expanded.
@@ -245,7 +245,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 		 * @param panel
 		 *            The child view that was slid to a expanded position
 		 */
-		public void onPanelExpanded(View panel);
+        void onPanelExpanded(View panel);
 
 		/**
 		 * Called when a sliding panel becomes anchored.
@@ -253,7 +253,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 		 * @param panel
 		 *            The child view that was slid to a anchored position
 		 */
-		public void onPanelAnchored(View panel);
+        void onPanelAnchored(View panel);
 
 		/**
 		 * Called when a sliding panel becomes completely hidden.
@@ -261,7 +261,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 		 * @param panel
 		 *            The child view that was slid to a hidden position
 		 */
-		public void onPanelHidden(View panel);
+        void onPanelHidden(View panel);
 	}
 
 	/**
@@ -559,8 +559,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
 					}
 				}
 			});
-			;
-		}
+        }
 	}
 
 	/**

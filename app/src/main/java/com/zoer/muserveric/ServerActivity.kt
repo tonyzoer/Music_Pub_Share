@@ -29,7 +29,7 @@ class ServerActivity : AppCompatActivity() {
 //        serverIntent.`package` = packageName
         startService(serverIntent)
         Log.d(TAG, "bind")
-        Toast.makeText(getApplicationContext(), "binding", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "binding", Toast.LENGTH_SHORT).show()
     }
 
 

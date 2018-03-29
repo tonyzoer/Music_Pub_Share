@@ -229,7 +229,7 @@ public class Slider extends CustomView {
 
     // Event when slider change value
     public interface OnValueChangedListener {
-        public void onValueChanged(int value);
+        void onValueChanged(int value);
     }
 
     class Ball extends View {

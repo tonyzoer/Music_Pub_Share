@@ -26,7 +26,7 @@ class ServerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val server = Thread(SocketServerThread())
         server.start()
-        Toast.makeText(getApplicationContext(), "binded", Toast.LENGTH_SHORT).show();
+        Toast.makeText(applicationContext, "binded", Toast.LENGTH_SHORT).show()
         return START_STICKY
 
     }

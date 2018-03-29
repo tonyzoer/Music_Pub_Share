@@ -21,10 +21,10 @@ class ConnectActivity : AppCompatActivity() {
                     address.text.toString(),
                     Integer.parseInt(port.text.toString()))
             myClientTask.execute()
-            var udpServer=UDPServer()
-            udpServer.runUdpServer()
-        })
 
+        })
+        var udpServerThread=UDPServerThread()
+        udpServerThread.start()
         clear.setOnClickListener({ response_text.text = "" })
     }
 

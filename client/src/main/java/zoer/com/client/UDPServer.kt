@@ -12,38 +12,37 @@ class UDPServer {
     private var Server_aktiv = true
 
 
-   public fun runUdpServer() {
-        async = @SuppressLint("StaticFieldLeak")
-        object : AsyncTask<Void, Void, Void>() {
-            override fun doInBackground(vararg params: Void): Void? {
-                val lMsg = ByteArray(4096)
-                val dp = DatagramPacket(lMsg, lMsg.size)
-                var ds: DatagramSocket? = null
-                var msg:String
-                try {
-                    ds = DatagramSocket(8888)
+    fun runUdpServer() {
+         object : AsyncTask<Void, Void, Void>() {
+             override fun doInBackground(vararg params: Void): Void? {
+                 val lMsg = ByteArray(4096)
+                 val dp = DatagramPacket(lMsg, lMsg.size)
+                 var ds: DatagramSocket? = null
+                 var msg:String
+                 try {
+                     ds = DatagramSocket(8888)
 
-                    while (Server_aktiv) {
-                        ds!!.receive(dp)
-                        msg=lMsg.toString()
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    if (ds != null) {
-                        ds.close()
-                    }
-                }
+                     while (Server_aktiv) {
+                         ds.receive(dp)
+                         msg=lMsg.toString()
+                     }
+                 } catch (e: Exception) {
+                     e.printStackTrace()
+                 } finally {
+                     if (ds != null) {
+                         ds.close()
+                     }
+                 }
 
-                return null
-            }
-        }
+                 return null
+             }
+         }.execute()
 
-        if (Build.VERSION.SDK_INT >= 11)
-            async!!.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-        else
-            async!!.execute()
-    }
+         if (Build.VERSION.SDK_INT >= 11)
+             async!!.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+         else
+             async!!.execute()
+     }
 
     fun stop_UDP_Server() {
         Server_aktiv = false

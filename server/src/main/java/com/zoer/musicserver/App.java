@@ -13,7 +13,8 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
  */
 
 public class App extends Application {
-    @Override
+
+                                                                                                                                      @Override
     public void onCreate() {
         super.onCreate();
         //Image Loader
@@ -32,4 +33,6 @@ public class App extends Application {
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config.build());
     }
+
+
 }

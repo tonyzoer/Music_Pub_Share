@@ -5,4 +5,16 @@
     <string name="pause">com.zoer.recivers.pause</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="action_settings">Settings</string>
+    <string name="settings">Settings</string>
+    <string name="settings_desc">App Settings</string>
+    <string name="server_settings">Server Settings</string>
+    <string name="server_settings_desc">Start/Stop server/broadcasting</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="music">Music</string>
+    <string name="player">Player</string>
+    <string name="pref_previously_started">pref_previously_started</string>
+    <string name="delete_this_path">Delete this Path?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="server_setings">Server Setings</string>
 </resources>
