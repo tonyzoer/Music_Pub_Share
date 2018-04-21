@@ -1,35 +1,55 @@
 package zoer.com.client
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_connect.*
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.IOException
 import java.net.Socket
 import java.net.UnknownHostException
+import android.net.wifi.WifiInfo
+import android.content.Context.WIFI_SERVICE
+import android.net.wifi.WifiManager
+import com.fasterxml.jackson.databind.ObjectMapper
+import zoer.com.client.data.User
 
-class ConnectActivity : AppCompatActivity() {
+
+class ConnectActivity : AppCompatActivity(), ListChangedListener {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connect)
-        connect.setOnClickListener({
-            val myClientTask = MyClientTask(
-                    address.text.toString(),
-                    Integer.parseInt(port.text.toString()))
-            myClientTask.execute()
 
+        ipLV.adapter=ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, ipList)
+        var udp= UDPServerThread(this).execute()
+        ipLV.setOnItemClickListener({ adapterView: AdapterView<*>, view: View, i: Int, l: Long ->
+            val info=(view as TextView).text.toString().split(":")
+            MyClientTask(info[0],info[1].toInt()).execute()
+            udpActive=false
         })
-        var udpServerThread=UDPServerThread()
-        udpServerThread.start()
-        clear.setOnClickListener({ response_text.text = "" })
+        update.setOnClickListener({
+            ipList.clear()
+            elementChanged()
+            udpActive=true
+            udp.cancel(true)
+            udp=UDPServerThread(this@ConnectActivity).execute()
+        })
     }
 
+    override fun elementChanged() {
+        val adapter=ipLV.adapter as ArrayAdapter<*>
+        adapter.notifyDataSetChanged()
+    }
 
-    inner class MyClientTask internal constructor(private var dstAddress: String, private var dstPort: Int) : AsyncTask<String, String, String>() {
+    @SuppressLint("StaticFieldLeak")
+    inner class MyClientTask internal constructor(private var dstAddress: String, private var dstPort: Int=0) : AsyncTask<String, String, String>() {
         private var response = ""
 
         override fun doInBackground(vararg arg0: String): String? {
@@ -38,9 +58,10 @@ class ConnectActivity : AppCompatActivity() {
             var dataOutputStream:DataOutputStream
             try {
                 socket = Socket(dstAddress, dstPort)
+                val objMap = ObjectMapper()
 
                 val byteArrayOutputStream = ByteArrayOutputStream(1024)
-                var buffer = "play".toByteArray()
+                val buffer = objMap.writeValueAsBytes(User(getMAC()))
                 dataOutputStream= DataOutputStream(socket.getOutputStream())
 
                 var bytesRead: Int
@@ -77,11 +98,14 @@ class ConnectActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(result: String) {
-            response_text.text = result
             super.onPostExecute(result)
             this@ConnectActivity.runOnUiThread({ Toast.makeText(this@ConnectActivity,response, Toast.LENGTH_SHORT ).show()})
         }
-
     }
 
+    fun getMAC():String{
+        val manager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val info = manager.connectionInfo
+        return info.macAddress
+    }
 }

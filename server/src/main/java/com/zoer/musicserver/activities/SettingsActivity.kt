@@ -1,9 +1,11 @@
 package com.zoer.musicserver.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DialogFragment
 import android.content.ContentValues
 import android.content.Intent
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteException
 import android.graphics.Color
 import android.os.Build
@@ -21,6 +23,7 @@ import com.zoer.musicserver.helpers.DBHelper
 import com.zoer.musicserver.R
 import com.zoer.musicserver.Utils.SongsManager
 import com.zoer.musicserver.builders.BMBBuilderManager
+import com.zoer.musicserver.data.Path
 import com.zoer.musicserver.dialogs.DeletePathDialog
 import com.zoer.musicserver.tasks.SaveMusicDataToJsonFileTask
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -28,6 +31,7 @@ import kotlinx.android.synthetic.main.content_settings.*
 import net.rdrei.android.dirchooser.DirectoryChooserActivity
 import net.rdrei.android.dirchooser.DirectoryChooserConfig
 import net.rdrei.android.dirchooser.DirectoryChooserFragment
+import java.io.File
 
 
 class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmentInteractionListener, DeletePathDialog.NoticeDialogListener {
@@ -35,8 +39,7 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
     private val CHOOSE_DIRECTORY_REQUEST_CODE: Int = 4007
     var dbHelper: DBHelper? = null
     private var mDialog: DirectoryChooserFragment? = null
-    private var pathes: ArrayList<String> = ArrayList()
-    private var pathes_ids: ArrayList<Int> = ArrayList()
+    private var pathes: ArrayList<Path> = ArrayList()
     private var delete_id: Int? = null
 
     companion object {
@@ -64,6 +67,7 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
 
     }
 
+
     fun UIinit() {
         setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.settings)
@@ -75,7 +79,7 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
         bmb.buttonEnum = ButtonEnum.Ham
         bmb.piecePlaceEnum = PiecePlaceEnum.HAM_2
         bmb.addBuilder(BMBBuilderManager.getMusicHAMButtonBuilder().listener({ startActivity(Intent(this, MusicActivity::class.java)) }))
-        bmb.addBuilder(BMBBuilderManager.getServerSettingsHAMButtonBuilder())
+        bmb.addBuilder(BMBBuilderManager.getServerSettingsHAMButtonBuilder().listener({ startActivity(Intent(this, ServerActivity::class.java)) }))
 
         //init Choose Dialog fragment
         val config = DirectoryChooserConfig.builder()
@@ -101,27 +105,10 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
         })
 
         //gettig pathes
-        var pathesStr: String = ""
-        try {
-            var db = dbHelper?.readableDatabase
-            var c = db?.rawQuery("SELECT * FROM pathes", null)
-            if (c?.moveToFirst() ?: false) {
-                do {
-                    var path = c?.getString(c.getColumnIndex("path"))
-                    var id = c?.getInt(c.getColumnIndex("id"))
-                    Log.d(TAG, path)
-                    pathes.add(path ?: "EMPTY")
-                    pathes_ids.add(id ?: -1)
-                    pathesStr = pathesStr.plus(path + "\n")
-                } while (c?.moveToNext() ?: false)
-            }
-
-        } catch (se: SQLiteException) {
-            Log.e(TAG, "Couldn't open the database")
-        }
+        pathes= dbHelper?.getMusicPathesFromDb()!!
 
         //init list of pathes
-        folder_pathes.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pathes)
+        folder_pathes.adapter = ArrayAdapter<Path>(this, android.R.layout.simple_list_item_1, pathes)
         folder_pathes.isTextFilterEnabled = true
 
         //delete path listener
@@ -133,7 +120,7 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
 
         //update music btn
         update_music_btn.setOnClickListener({
-            SaveMusicDataToJsonFileTask(applicationContext).execute(pathes)
+            SaveMusicDataToJsonFileTask(applicationContext).execute()
         })
     }
 
@@ -145,14 +132,14 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
     override fun onDialogPositiveClick(dialog: DialogFragment) {
         try {
             var db = dbHelper?.writableDatabase
-            db?.delete("pathes", "id=?", arrayOf(pathes_ids[delete_id ?: -1].toString()))
+            var id=pathes[delete_id ?: -1].id
+            db?.delete("pathes", "id=?", arrayOf(id.toString()))
         } catch (e: Throwable) {
             Log.d(TAG, "Delete went wrong")
         }
         try {
             pathes.removeAt(delete_id ?: -1)
-            pathes_ids.removeAt(delete_id ?: -1)
-            (folder_pathes.adapter as ArrayAdapter<String>).notifyDataSetChanged()
+            (folder_pathes.adapter as ArrayAdapter<Path>).notifyDataSetChanged()
         } catch (e: Throwable) {
             Log.d(TAG, "Delete went wrong")
         }
@@ -174,8 +161,15 @@ class SettingsActivity : AppCompatActivity(), DirectoryChooserFragment.OnFragmen
         mDialog?.dismiss()
         val db = dbHelper?.getWritableDatabase()
         cv.put("path", path)
-        pathes.add(path)
-        val rowID = db?.insert("pathes", null, cv)
+        cv.put("datetime_modified", File(path).lastModified())
+        try {
+            val rowID = db?.insertOrThrow("pathes", null, cv)
+            pathes.add(Path(rowID!!.toInt(),path, File(path).lastModified().toInt()))
+        }catch (e: SQLiteConstraintException){
+            Log.d(TAG,e.toString())
+            Toast.makeText(this,"Upps add went wrong",Toast.LENGTH_LONG).show()
+        }
+        (folder_pathes.adapter as ArrayAdapter<*>).notifyDataSetChanged()
     }
 
 }

@@ -3,19 +3,24 @@ package com.zoer.musicserver.tasks
 import android.content.Context
 import android.os.AsyncTask
 import com.zoer.musicserver.Utils.SongsManager
+import com.zoer.musicserver.data.Path
 import java.lang.ref.WeakReference
 
 
-class SaveMusicDataToJsonFileTask: AsyncTask<ArrayList<String>, Unit, Unit> {
-    var contextWR:WeakReference<Context>?=null
+class SaveMusicDataToJsonFileTask(ctx: Context) : AsyncTask<Unit, Unit, Boolean>() {
+    private var contextWR: WeakReference<Context> = WeakReference(ctx)
+    var allWorksFine=false
+    override fun doInBackground(vararg p0: Unit):Boolean {
+        contextWR.get().let {
+            val songManager = SongsManager(it!!)
+            songManager.initPlayList()
+            songManager.saveToJsonFile()
+            allWorksFine=true
+        }
+        contextWR.clear()
 
-    constructor(ctx:Context):super(){
-        contextWR=WeakReference(ctx)
+        return allWorksFine
     }
 
-    override fun doInBackground(vararg p0: ArrayList<String>) {
-        var songManager=SongsManager()
-        songManager.initPlayList(p0[0])
-        songManager.saveToJsonFile(contextWR?.get())
-    }
+
 }

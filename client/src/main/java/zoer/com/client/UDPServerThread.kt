@@ -1,28 +1,40 @@
 package zoer.com.client
 
+import android.os.AsyncTask
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.nio.charset.Charset
 
-/**
- * Created by mafio on 3/17/2018.
- */
-class UDPServerThread : Thread() {
-    override fun run() {
-        super.run()
+class UDPServerThread (activity:ConnectActivity): AsyncTask<Unit,String,Unit>() {
+    var mListener:ListChangedListener=activity
+
+    override fun onProgressUpdate(vararg values: String?) {
+        super.onProgressUpdate(*values)
+        ipList.addUnique(values[0])
+        mListener.elementChanged()
+    }
+
+    override fun doInBackground(vararg p0: Unit?) {
 
         var ds: DatagramSocket? = null
         var msg: String
-        var address: String?
         try {
-            ds = DatagramSocket(11111, InetAddress.getByName("192.168.1.255"))
+            ds = DatagramSocket(11111, InetAddress.getByName(SERVER_BROADCAST_PORT))
             ds.broadcast = true
 
-            val lMsg = ByteArray(4096)
+            var lMsg = ByteArray(20)
             val dp = DatagramPacket(lMsg, lMsg.size)
-            ds.receive(dp)
-            msg = lMsg.toString()
-                var address = dp.address.hostAddress
+            while(udpActive) {
+                ds.receive(dp)
+                lMsg = lMsg.trimZero()
+                msg = lMsg.toString(Charset.defaultCharset()).trimEnd()
+                if (msg.contains("Muserver")) {
+                    val address = dp.address.hostAddress
+                    val port= msg.split("port=")[1]
+                        publishProgress("$address:$port")
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -32,4 +44,17 @@ class UDPServerThread : Thread() {
         }
     }
 
+}
+
+
+fun ArrayList<String>.addUnique(element:String?):Boolean {
+    if(element!=null && !this.contains(element)){
+        this.add(element)
+        return true
+    }
+    return false
+}
+fun ByteArray.trimZero():ByteArray{
+    val zeroByte:Byte=0
+    return this.filter { it != zeroByte }.toByteArray()
 }

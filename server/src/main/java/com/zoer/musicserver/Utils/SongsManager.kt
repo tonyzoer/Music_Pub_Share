@@ -5,55 +5,62 @@ import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.fasterxml.jackson.core.JsonGenerationException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.zoer.musicserver.data.Path
 import com.zoer.musicserver.data.Song
+import com.zoer.musicserver.helpers.DBHelper
 import java.io.*
 
 
-class SongsManager {
-    var list: ArrayList<Song>? = ArrayList()
+class SongsManager(context: Context) {
+    var list: ArrayList<Song> = ArrayList()
+
+
+    private var dbHelper:DBHelper= DBHelper(context)
+    private val ctx=context
     private var i: Int = 1
 
-    companion object {
-        val TAG = "SongsManager"
-    }
 
-    fun initPlayList(pathes: ArrayList<String>): ArrayList<String> {
-        var songPathes: ArrayList<String> = ArrayList()
-        for (s in pathes) {
-            var derictories: ArrayList<String> = ArrayList()
-            val home = File(s)
-            if (home.listFiles(FileFilter { file -> file.isDirectory }).size > 0) {
-                for (file in home.listFiles(FileFilter { file -> file.isDirectory }))
-                    derictories.add(file.path)
+
+
+    fun initPlayList(pathes:ArrayList<Path> = dbHelper.getMusicPathesFromDb()): ArrayList<String> {
+
+        val songs: ArrayList<String> = ArrayList()
+        for (path in pathes) {
+            val directories: ArrayList<Path> = ArrayList()
+            val home = File(path.path)
+            if (home.listFiles({ file -> file.isDirectory }).isNotEmpty()) {
+                for (file in home.listFiles({ file -> file.isDirectory }))
+                    directories.add(Path(0,file.path,0))
             }
 
-            songPathes.addAll(initPlayList(derictories))
+            songs.addAll(initPlayList(directories))
             var imgSrc = ""
-            if (home.listFiles(FileFilter { file ->
-                        file.extension.equals("jpg")
-                                || file.extension.equals("jpeg")
-                                || file.extension.equals("j")
-                                || file.extension.equals("JPEG")
-                                || file.extension.equals("JPG")
-                    }).size > 0) {
+            if (home.listFiles({ file ->
+                        file.extension == "jpg"
+                                || file.extension == "jpeg"
+                                || file.extension == "j"
+                                || file.extension == "JPEG"
+                                || file.extension == "JPG"
+                    }).isNotEmpty()) {
                 for (fileImage in home.listFiles({ file ->
                     file.extension.equals("jpg")
-                            || file.extension.equals("jpeg")
-                            || file.extension.equals("j")
-                            || file.extension.equals("JPEG")
-                            || file.extension.equals("JPG") })) {
+                            || file.extension == "jpeg"
+                            || file.extension == "j"
+                            || file.extension == "JPEG"
+                            || file.extension == "JPG"
+                })) {
                     imgSrc = fileImage.path
                     break
                     //Todo make it as List and swypeble imgs
                 }
             }
 
-            if (home.listFiles(FileFilter { file -> file.extension.equals("MP3") || file.extension.equals("mp3") }).size > 0) {
-                val countInDirectory = home.listFiles(FileFilter { file -> file.extension.equals("MP3") || file.extension.equals("mp3") }).size
+            if (home.listFiles( { file -> file.extension == "MP3" || file.extension == "mp3" }).isNotEmpty()) {
+                val countInDirectory = home.listFiles({ file -> file.extension == "MP3" || file.extension == "mp3" }).size
                 var ii = 1
-                for (file in home.listFiles(FileFilter { file -> file.extension.equals("MP3") || file.extension.equals("mp3") })) {
+                for (file in home.listFiles({ file -> file.extension == "MP3" || file.extension == "mp3" })) {
                     val filePath = file.path
-                    songPathes.add(filePath)
+                    songs.add(filePath)
                     val mmr = MediaMetadataRetriever()
 
                     mmr.setDataSource(filePath)
@@ -73,18 +80,18 @@ class SongsManager {
                             countInDirectory,
                             duration.toInt()/1000
                     )
-                    list?.add(song)
+                    list.add(song)
 
 
                 }
             }
         }
-        return songPathes
+        return songs
     }
 
 
     fun saveToJsonString(songs: ArrayList<Song>): String {
-        var objMaper = ObjectMapper()
+        val objMaper = ObjectMapper()
         var json: String = ""
         try {
             json = objMaper.writeValueAsString(songs)
@@ -94,27 +101,27 @@ class SongsManager {
         return json
     }
 
-    fun saveToJsonFile(context: Context?): File {
+    fun saveToJsonFile(): File {
         val fileName = "localMusic.json"
-        var objMaper = ObjectMapper()
-        if (context != null) {
-            var file = File(context.filesDir, fileName)
-            var json: String = ""
-            try {
+        val objMaper = ObjectMapper()
+
+        val file = File(ctx.filesDir, fileName)
+        val json: String
+        try {
                 json = objMaper.writeValueAsString(list)
-                context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+                ctx.openFileOutput(fileName, Context.MODE_PRIVATE).use {
                     it.write(json.toByteArray())
                     it.close()
                 }
 
             } catch (je: JsonGenerationException) {
-                var errStr = "Json generetaion went wrong ${je.message}"
+                val errStr = "Json generetaion went wrong ${je.message}"
                 Log.e(TAG, errStr)
             }
 
-            var fis = context.openFileInput(fileName)
+            val fis = ctx.openFileInput(fileName)
 
-            var reader = BufferedReader(InputStreamReader(DataInputStream(fis)))
+            val reader = BufferedReader(InputStreamReader(DataInputStream(fis)))
 
             var line: String?
             while (true) {
@@ -124,7 +131,12 @@ class SongsManager {
             }
 
             return file
-        }
-        return File("EMPTY", "EMPTY")
+
     }
+
+    companion object {
+        const val TAG = "SongsManager"
+    }
+
+
 }
