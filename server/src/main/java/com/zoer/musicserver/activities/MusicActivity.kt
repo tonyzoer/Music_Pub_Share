@@ -4,7 +4,6 @@
  * Copyright @Dibakar_Mistry(dibakar.ece@gmail.com), 2017.
  */
 package com.zoer.musicserver.activities
-
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -48,10 +47,13 @@ import com.zoer.musicserver.adapter.AdapterMusic
 import com.zoer.musicserver.builders.BMBBuilderManager
 import com.zoer.musicserver.network.MusicBrowser
 import com.zoer.musicserver.network.MusicLoaderListener
+import com.zoer.musicserver.singletones.SteamingManagerSingleton
 import com.zoer.musicserver.slidinguppanel.SlidingUpPanelLayout
 import com.zoer.musicserver.widgets.LineProgress
 import com.zoer.musicserver.widgets.PlayPauseView
 import com.zoer.musicserver.widgets.Slider
+
+
 import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.include_slidepanelchildtwo_bottomview.*
@@ -293,6 +295,7 @@ class MusicActivity : AppCompatActivity(), CurrentSessionCallback, View.OnClickL
 
     private fun configAudioStreamer() {
         streamingManager = AudioStreamingManager.getInstance(context)
+        SteamingManagerSingleton.streamingManager=streamingManager
         //Set PlayMultiple 'true' if want to playing sequentially one by one songs
         // and provide the list of songs else set it 'false'
         streamingManager!!.isPlayMultiple = true
