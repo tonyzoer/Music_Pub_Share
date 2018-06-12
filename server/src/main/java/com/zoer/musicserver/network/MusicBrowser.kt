@@ -10,6 +10,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Build
 import android.text.TextUtils
+import android.util.Log
 
 import com.google.gson.JsonSyntaxException
 
@@ -38,6 +39,7 @@ object MusicBrowser {
     var RESPONSE_CODE_SUCCESS = "200"
     var RESPONSE_CODE_CONNECTION_TIMEOUT = "9001"
     var RESPONSE_CODE_SOCKET_TIMEOUT = "903"
+    private val TAG ="Music Browser"
 
 
     // always check HTTP response code first
@@ -163,6 +165,7 @@ object MusicBrowser {
     }
 
 
+
     fun getMusicList(response: String?, name: String?): MutableList<MediaMetaData> {
         val listArticle = ArrayList<MediaMetaData>()
         var array: JSONArray? = null
@@ -189,6 +192,9 @@ object MusicBrowser {
             e.printStackTrace()
         } catch (e: JsonSyntaxException) {
             e.printStackTrace()
+        } catch(e: NullPointerException){
+            e.printStackTrace()
+            Log.d(TAG, "Initial start of get Music List")
         }
 
         return listArticle
