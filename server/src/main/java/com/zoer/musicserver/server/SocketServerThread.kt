@@ -3,7 +3,6 @@ package com.zoer.musicserver.server
 import android.util.Log
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.zoer.musicserver.data.Request
-import com.zoer.musicserver.data.User
 import java.io.DataInputStream
 import java.io.IOException
 import java.net.InetAddress
@@ -52,7 +51,7 @@ class SocketServerThread : Thread() {
 //                this.run { nextSong() }
 //                    this@ServerActivity.runOnUiThread({ msg.text = message })
 
-                val socketServerReplyThread = SocketServerReplyThread(
+                val socketServerReplyThread = TestSocketServerReplyThread(
                         socket, count)
                 socketServerReplyThread.run()
 
