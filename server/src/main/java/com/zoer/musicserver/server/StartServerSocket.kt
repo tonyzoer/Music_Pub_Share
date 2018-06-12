@@ -28,7 +28,7 @@ class StartServerSocket : Service() {
             if (!(socketServerThreadLink?.isAlive ?: true)) {
                 server = socketServerThreadLink
             } else {
-                server = Thread(SocketServerThread())
+                server = Thread(SocketServerThread(context = applicationContext))
                 server?.start()
                 Log.d(TAG, "Server Started")
                 socketServerThreadLink = server

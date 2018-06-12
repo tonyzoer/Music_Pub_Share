@@ -1,5 +1,6 @@
 package com.zoer.musicserver.server
 
+import android.content.Context
 import android.util.Log
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.zoer.musicserver.data.Request
@@ -9,7 +10,7 @@ import java.net.InetAddress
 import java.nio.charset.Charset
 
 
-class SocketServerThread : Thread() {
+class SocketServerThread(val context: Context) : Thread() {
     private var count = 0
     var message = ""
 
@@ -42,7 +43,7 @@ class SocketServerThread : Thread() {
                 var buffer = ByteArray(1000)
                 dataInputStream.read(buffer)
                 val request: Request = objMapper.readValue(buffer.toString(Charset.defaultCharset()).trimEnd(), Request::class.java)
-                manage(request)
+                manage(request,socket,context)
                 val os = socket.getOutputStream()
                 os.write(bytes, 0, bytes.size)
                 Log.d(StartServerSocket.TAG, bytes[0].toString())
