@@ -149,19 +149,13 @@ object MusicBrowser {
 
 
     fun loadJSONFromInternalStorage(context: Context): String? {
-//        val json = StringBuilder()
-//        val txt=""
         try {
             val fis = context.openFileInput("localMusic.json")
-//            val br = BufferedReader(InputStreamReader(fis))
             return fis.bufferedReader().use(BufferedReader::readText)
-
         } catch (ex: IOException) {
             ex.printStackTrace()
             return null
         }
-
-//        return txt
     }
 
 
